@@ -8,6 +8,7 @@ authors = ["Cristian Blanco <crismablanco@gmail.com>"]
 python = "^3.10"
 Django = "^4.1.2"
 djangorestframework = "^3.14.0"
+black = "^22.10.0"
 
 [tool.poetry.dev-dependencies]
 
