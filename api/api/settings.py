@@ -29,8 +29,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
-INSTALLED_APPS = [
+INSTALLED_CORE_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -38,6 +37,16 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
+
+INSTALLED_INTERNAL_APPS = [
+    "casestudy",
+]
+
+INSTALLED_EXTERNAL_APPS = [
+    "rest_framework",
+]
+
+INSTALLED_APPS = INSTALLED_CORE_APPS + INSTALLED_INTERNAL_APPS + INSTALLED_EXTERNAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
