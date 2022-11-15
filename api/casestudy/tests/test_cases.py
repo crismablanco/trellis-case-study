@@ -1,4 +1,6 @@
 from django.test import TestCase
+from rest_framework.test import APIClient
+
 from casestudy.services import NumbersService
 
 
@@ -18,7 +20,7 @@ class TestService(TestCase):  # pragma: no cover
             100: "one hundred",
             298888: "two hundred and ninety eight thousand eight hundred and eighty eight",
             1e50: "The given number is too big",
-            -1: "",
+            -1: "",  # only positive integers
         }
         and_word = "and"
         numbers_service = NumbersService(and_word=and_word)
@@ -28,8 +30,45 @@ class TestService(TestCase):  # pragma: no cover
             number_in_english = numbers_service.convert(number=int(number))
             self.assertEqual(number_in_english, word)
 
+        # test without and_word
         and_word = ""
         numbers_service = NumbersService(and_word=and_word)
         self.assertEqual(numbers_service.and_word, "")
         number_in_english = numbers_service.convert(number=40)
         self.assertEqual(number_in_english, "fourty")
+
+        # test not numbers
+        number_in_english = numbers_service.convert(number="I'm not a number")
+        self.assertEqual(number_in_english, "")
+
+        # test float
+        number_in_english = numbers_service.convert(number=20.4)
+        self.assertEqual(number_in_english, "")
+
+
+class EndpointTests(TestCase):
+    def test_endpoints(self):
+        client = APIClient()
+        number = 298888
+        word = "two hundred and ninety eight thousand eight hundred and eighty eight"
+
+        request = client.get(f"/num_to_english/?number={number}&and_word=and")
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.data["num_in_english"], word)
+        self.assertEqual(request.data["status"], "ok")
+
+        request = client.post("/num_to_english/", dict(number=number, and_word="and"))
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.data["num_in_english"], word)
+        self.assertEqual(request.data["status"], "ok")
+
+        # bad requests
+        request = client.get("/num_to_english/")
+        self.assertEqual(request.status_code, 500)
+        self.assertEqual(request.data["num_in_english"], "")
+        self.assertEqual(request.data["status"], "fail")
+
+        request = client.post("/num_to_english/")
+        self.assertEqual(request.status_code, 500)
+        self.assertEqual(request.data["num_in_english"], "")
+        self.assertEqual(request.data["status"], "fail")
