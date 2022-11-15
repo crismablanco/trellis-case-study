@@ -68,9 +68,9 @@ class NumbersService:
 
     def convert(self, number: int) -> str:
         expression = self.__convert_to_english(number=number)
-        return self.clean_stop_words(expression=expression)
+        return self.__clean_stop_words(expression=expression)
 
-    def clean_stop_words(self, expression: str) -> str:
+    def __clean_stop_words(self, expression: str) -> str:
         if expression.startswith(self.and_word):
             return expression[len(self.and_word) :].strip()
         return expression.strip()
