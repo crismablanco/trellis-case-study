@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from casestudy.views import NumberConverterToWordsView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("num_to_english/", NumberConverterToWordsView.as_view()),
 ]
