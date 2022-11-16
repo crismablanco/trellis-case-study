@@ -1,6 +1,9 @@
 # Trellis Case Study by Cristian Blanco
 
+[![Django CI](https://github.com/crismablanco/trellis-case-study/actions/workflows/django.yml/badge.svg?branch=development)](https://github.com/crismablanco/trellis-case-study/actions/workflows/django.yml)
+[![Python application](https://github.com/crismablanco/trellis-case-study/actions/workflows/python-app.yml/badge.svg?branch=development)](https://github.com/crismablanco/trellis-case-study/actions/workflows/python-app.yml)
 
+#
 #### __HOW TO RUN WITH DOCKER__
 1. Install `docker compose`
 2. Go to project root folder and run `docker-compose build`
