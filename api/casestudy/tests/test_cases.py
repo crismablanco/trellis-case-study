@@ -48,27 +48,59 @@ class TestService(TestCase):  # pragma: no cover
 
 class EndpointTests(TestCase):
     def test_endpoints(self):
+        expected_words = {
+            0: "zero",
+            1: "one",
+            9: "nine",
+            10: "ten",
+            11: "eleven",
+            12: "twelve",
+            20: "twenty",
+            40: "fourty",
+            66: "sixty six",
+            99: "ninety nine",
+            100: "one hundred",
+            298888: "two hundred and ninety eight thousand eight hundred and eighty eight",
+            1e50: "The given number is too big",
+        }
+
         client = APIClient()
-        number = 298888
-        word = "two hundred and ninety eight thousand eight hundred and eighty eight"
+        for number, word in expected_words.items():
+            request = client.get(f"/num_to_english/?number={int(number)}&and_word=and")
+            self.assertEqual(request.status_code, 200)
+            self.assertEqual(request.data["num_in_english"], word)
+            self.assertEqual(request.data["status"], "ok")
 
-        request = client.get(f"/num_to_english/?number={number}&and_word=and")
-        self.assertEqual(request.status_code, 200)
-        self.assertEqual(request.data["num_in_english"], word)
-        self.assertEqual(request.data["status"], "ok")
-
-        request = client.post("/num_to_english/", dict(number=number, and_word="and"))
-        self.assertEqual(request.status_code, 200)
-        self.assertEqual(request.data["num_in_english"], word)
-        self.assertEqual(request.data["status"], "ok")
+            request = client.post(
+                "/num_to_english/", dict(number=int(number), and_word="and")
+            )
+            self.assertEqual(request.status_code, 200)
+            self.assertEqual(request.data["num_in_english"], word)
+            self.assertEqual(request.data["status"], "ok")
 
         # bad requests
+        # without query param
         request = client.get("/num_to_english/")
         self.assertEqual(request.status_code, 500)
         self.assertEqual(request.data["num_in_english"], "")
         self.assertEqual(request.data["status"], "fail")
 
+        # without body param
         request = client.post("/num_to_english/")
         self.assertEqual(request.status_code, 500)
         self.assertEqual(request.data["num_in_english"], "")
+        self.assertEqual(request.data["status"], "fail")
+
+        # float param
+        request = client.get("/num_to_english/?number=0.9")
+        self.assertEqual(request.status_code, 500)
+        self.assertEqual(request.data["status"], "fail")
+
+        # not a number param
+        request = client.get("/num_to_english/?number=not-a-number")
+        self.assertEqual(request.status_code, 500)
+        self.assertEqual(request.data["status"], "fail")
+
+        request = client.get("/num_to_english/?number=1e20")
+        self.assertEqual(request.status_code, 500)
         self.assertEqual(request.data["status"], "fail")
