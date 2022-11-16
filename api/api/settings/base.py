@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from casestudy.utils import str2bool
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-gw7ucj34yytjmscccozeh7d221)=ou0+eqokww^k6j$v0zei+="
+SECRET_KEY = os.getenv("SECRET_KEY", "postgres")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str2bool(os.getenv("DEBUG", "True"))
 
 ALLOWED_HOSTS = ["*"]
 
@@ -85,14 +86,15 @@ WSGI_APPLICATION = "api.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "ATOMIC_REQUESTS": True,
-        "USER": os.getenv("POSTGRESQL_USER", "postgres"),
-        "PASSWORD": os.getenv("POSTGRESQL_PASSWORD", "postgres"),
-        "NAME": os.getenv("POSTGRESQL_DB_NAME", "trellis_api_db"),
-        "HOST": os.getenv("POSTGRESQL_HOST", "127.0.0.1"),
-        "PORT": os.getenv("POSTGRESQL_PORT", "5432"),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "trellis.db",
     }
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
+    "UNAUTHENTICATED_USER": None,
 }
 
 
