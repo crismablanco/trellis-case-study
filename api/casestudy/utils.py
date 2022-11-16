@@ -4,4 +4,4 @@ def str2bool(value: str or bool) -> bool:
     if isinstance(value, bool):
         return value
 
-    return value.lower() in ("yes", "true", "t", "1")
+    return value.lower() in ("yes", "true", "t", "1", "y")
