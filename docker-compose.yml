@@ -1,0 +1,33 @@
+version: '3'
+
+volumes:
+  db:
+
+services:
+  dbtrellis:
+    image: postgres:12
+    restart: unless-stopped
+    command: ["postgres", "-c", "log_statement=all"]
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=trellis_api_db
+
+  apitrellis:
+    build: .
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/api
+    depends_on:
+      - dbtrellis
+    environment:
+      - POSTGRESQL_HOST=dbtrellis
+      - POSTGRES_DB=trellis_api_db
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
