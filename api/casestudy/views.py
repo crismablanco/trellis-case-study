@@ -1,17 +1,19 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .services import NumbersService
+from .serializers import ConverterSerializer
 
 
 class NumberConverterToWordsView(APIView):
-    def get_number_in_words(self, number: int, and_word: str = "") -> str:
+    def get_number_in_words(self, number: int, and_word: str = "") -> Response:
         service = NumbersService(and_word=and_word)
         num_in_english = service.convert(number=int(number) if number.isdigit() else -1)
         status_code = 200 if num_in_english else 500
-        status_str = "ok" if num_in_english else "fail"
-        return Response(
-            dict(status=status_str, num_in_english=num_in_english), status=status_code
+        raw_data = dict(
+            status="ok" if num_in_english else "fail", num_in_english=num_in_english
         )
+        serialized_data = ConverterSerializer(instance=raw_data).data
+        return Response(serialized_data, status=status_code)
 
     def post(self, request):
         requested_number = request.data.get("number", "")
